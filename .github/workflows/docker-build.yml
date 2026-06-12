@@ -9,18 +9,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Code checkout karna
+    # ==========================================
+    # STEP 1: CODE CHECKOUT (Hamesha pehla step)
+    # ==========================================
     - name: Check out repo code
       uses: actions/checkout@v4
 
-    # 2. Docker Hub par login karna (Using Secrets)
+    # ==========================================
+    # STEP 2: CODE TEST (HTML Lint/Validation Check)
+    # ==========================================
+    - name: Run HTML Code Test
+      run: |
+        echo "Starting automated testing on code..."
+        # Hmare code ka basic structure check karne ke liye grep run kar rahe hain
+        if grep -q "<html>\|<h1>\|<p>" index.html; then
+          echo "Test Passed: Valid HTML tags found!"
+        else
+          echo "Test Failed: No valid HTML structure found!" && exit 1
+        fi
+
+    # ==========================================
+    # STEP 3: DOCKER BUILD & PUSH
+    # ==========================================
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-    # 3. Docker Image build aur push karna
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
