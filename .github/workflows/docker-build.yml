@@ -5,32 +5,34 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-push:
+  # ==========================================
+  # JOB 1: CODE TESTING
+  # ==========================================
+  test-code:
     runs-on: ubuntu-latest
-
     steps:
-    # ==========================================
-    # STEP 1: CODE CHECKOUT (Hamesha pehla step)
-    # ==========================================
     - name: Check out repo code
       uses: actions/checkout@v4
 
-    # ==========================================
-    # STEP 2: CODE TEST (HTML Lint/Validation Check)
-    # ==========================================
     - name: Run HTML Code Test
       run: |
         echo "Starting automated testing on code..."
-        # Hmare code ka basic structure check karne ke liye grep run kar rahe hain
         if grep -q "<html>\|<h1>\|<p>" index.html; then
           echo "Test Passed: Valid HTML tags found!"
         else
           echo "Test Failed: No valid HTML structure found!" && exit 1
         fi
 
-    # ==========================================
-    # STEP 3: DOCKER BUILD & PUSH
-    # ==========================================
+  # ==========================================
+  # JOB 2: DOCKER BUILD & PUSH (Runs only if Job 1 passes)
+  # ==========================================
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: test-code # Yeh line Docker build ko tab tak rokegi jab tak test pass nahi hota
+    steps:
+    - name: Check out repo code
+      uses: actions/checkout@v4
+
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
