@@ -1,0 +1,17 @@
+name: My First Docker Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest 
+
+    steps:
+    - name: Check out repo code
+      uses: actions/checkout@v4
+
+
+    - name: Run a welcome message
+      run: echo "Hello Senior! Pipeline is working perfectly."
